@@ -109,7 +109,7 @@
   </div>
 
   <script>
-    // Get necessary elements from the HTML
+    
     const todoForm = document.getElementById('todo-form');
     const todoInput = document.getElementById('todo-input');
     const todoDate = document.getElementById('todo-date');
@@ -120,17 +120,17 @@
     const filterActiveButton = document.getElementById('filter-active');
     const filterCompletedButton = document.getElementById('filter-completed');
 
-    // Initialize an array to store the to-do items
+    
     let todos = [];
 
-    // Function to render the to-do list
+    
     function renderTodos() {
-      // Clear the existing list
+      
       todoList.innerHTML = '';
 
-      // Render each to-do item
+      
       todos.forEach((todo, index) => {
-        // Create list item element
+        
         const li = document.createElement('li');
         li.innerHTML = `
           <span>${todo.task}</span>
@@ -139,61 +139,61 @@
           <button class="delete-button" data-index="${index}">Delete</button>
         `;
 
-        // Append the list item to the to-do list
+        
         todoList.appendChild(li);
       });
     }
 
-    // Function to add a new to-do item
+    
     function addTodo(event) {
       event.preventDefault();
 
-      // Get the values from the input fields
+      
       const newTodo = todoInput.value.trim();
       const newDate = todoDate.value;
       const newStatus = todoStatus.value;
 
-      // Add the new to-do item to the array
+      
       if (newTodo !== '' && newDate !== '') {
         todos.push({ task: newTodo, date: newDate, status: newStatus });
 
-        // Render the updated to-do list
+        
         renderTodos();
 
-        // Clear the input fields
+        
         todoInput.value = '';
         todoDate.value = '';
       }
     }
 
-    // Function to delete a to-do item
+    
     function deleteTodo(event) {
-      // Check if the clicked element is a delete button
+      
       if (event.target.classList.contains('delete-button')) {
-        // Get the index of the to-do item to delete
+        
         const index = parseInt(event.target.getAttribute('data-index'));
 
-        // Remove the to-do item from the array
+        
         todos.splice(index, 1);
 
-        // Render the updated to-do list
+        
         renderTodos();
       }
     }
 
-    // Function to filter the to-do list
+    
     function filterTodos(event) {
       const filterType = event.target.id;
 
-      // Reset active state of all filter buttons
+      
       filterAllButton.classList.remove('active');
       filterActiveButton.classList.remove('active');
       filterCompletedButton.classList.remove('active');
 
-      // Apply active state to the clicked filter button
+      
       event.target.classList.add('active');
 
-      // Render the filtered to-do list
+      
       if (filterType === 'filter-all') {
         renderTodos();
       } else if (filterType === 'filter-active') {
@@ -205,14 +205,14 @@
       }
     }
 
-    // Function to render a filtered to-do list
+    
     function renderFilteredTodos(filteredTodos) {
-      // Clear the existing list
+      
       todoList.innerHTML = '';
 
-      // Render each filtered to-do item
+      
       filteredTodos.forEach((todo, index) => {
-        // Create list item element
+        
         const li = document.createElement('li');
         li.innerHTML = `
           <span>${todo.task}</span>
@@ -221,26 +221,27 @@
           <button class="delete-button" data-index="${index}">Delete</button>
         `;
 
-        // Append the list item to the to-do list
+        
         todoList.appendChild(li);
       });
     }
 
-    // Event listener for the form submission
+    
     todoForm.addEventListener('submit', addTodo);
 
-    // Event listener for the delete button clicks
+    
     todoList.addEventListener('click', deleteTodo);
 
-    // Event listener for the filter toggle button
+    
     filterToggle.addEventListener('click', () => {
       document.body.classList.toggle('show-filters');
     });
 
-    // Event listener for the filter buttons
+    
     filterAllButton.addEventListener('click', filterTodos);
     filterActiveButton.addEventListener('click', filterTodos);
     filterCompletedButton.addEventListener('click', filterTodos);
   </script>
 </body>
 </html>
+
