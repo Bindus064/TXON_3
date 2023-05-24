@@ -3,41 +3,68 @@
 <head>
   <title>To-Do List App</title>
   <style>
+    /* CSS styles */
     body {
       font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
     }
 
     .container {
-      max-width: 400px;
-      margin: 0 auto;
+      max-width: 600px;
+      margin: 20px auto;
       padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     h1 {
       text-align: center;
+      color: #333;
     }
 
     form {
       display: flex;
-      margin-bottom: 10px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
     }
 
-    input[type="text"], input[type="date"] {
-      flex-grow: 1;
-      padding: 5px;
+    input[type="text"],
+    input[type="date"],
+    select {
+      flex: 1;
+      padding: 8px;
       font-size: 16px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
     }
 
+    button[type="submit"],
     button {
-      padding: 5px 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+      color: #fff;
       background-color: #4caf50;
       border: none;
-      color: white;
-      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
     }
 
+    button[type="submit"]:hover,
     button:hover {
       background-color: #45a049;
+    }
+
+    button.delete-button,
+    button.edit-button {
+      background-color: #f44336;
+      margin-left: 5px;
+    }
+
+    button.delete-button:hover,
+    button.edit-button:hover {
+      background-color: #d32f2f;
     }
 
     ul {
@@ -46,44 +73,36 @@
     }
 
     li {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #ddd;
-      padding: 5px 0;
+      background-color: #f9f9f9;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
     }
 
-    li:last-child {
-      border-bottom: none;
-    }
-
-    .delete-button {
-      background-color: #f44336;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .delete-button:hover {
-      background-color: #d32f2f;
+    li span {
+      display: block;
+      margin-bottom: 5px;
     }
 
     .filter-buttons {
-      margin-top: 10px;
       display: none;
+      margin-top: 10px;
+    }
+
+    .filter-buttons button {
+      margin-right: 5px;
     }
 
     .show-filters .filter-buttons {
-      display: block;
+      display: flex;
     }
 
-    .status-select {
-      flex-grow: 1;
-      margin-left: 10px;
-      padding: 5px;
-      font-size: 16px;
+    .active {
+      background-color: #2196f3;
+    }
+
+    .active:hover {
+      background-color: #1976d2;
     }
   </style>
 </head>
@@ -93,7 +112,7 @@
     <form id="todo-form">
       <input type="text" id="todo-input" placeholder="Enter a to-do item" required>
       <input type="date" id="todo-date" required>
-      <select id="todo-status" class="status-select">
+      <select id="todo-status">
         <option value="Active">Active</option>
         <option value="Completed">Completed</option>
       </select>
@@ -109,6 +128,8 @@
   </div>
 
   <script>
+    
+
     
     const todoForm = document.getElementById('todo-form');
     const todoInput = document.getElementById('todo-input');
@@ -136,7 +157,8 @@
           <span>${todo.task}</span>
           <span>Date: ${todo.date}</span>
           <span>Status: ${todo.status}</span>
-          <button class="delete-button" data-index="${index}">Delete</button>
+          <button class="delete-button" onclick="deleteTodo(${index})">Delete</button>
+          <button class="edit-button" onclick="editTodo(${index})">Edit</button>
         `;
 
         
@@ -145,9 +167,7 @@
     }
 
     
-    function addTodo(event) {
-      event.preventDefault();
-
+    function addTodo() {
       
       const newTodo = todoInput.value.trim();
       const newDate = todoDate.value;
@@ -167,14 +187,25 @@
     }
 
     
-    function deleteTodo(event) {
+    function deleteTodo(index) {
       
-      if (event.target.classList.contains('delete-button')) {
-        
-        const index = parseInt(event.target.getAttribute('data-index'));
+      todos.splice(index, 1);
+
+      
+      renderTodos();
+    }
+
+    
+    function editTodo(index) {
+      const newTodo = prompt('Enter a new task');
+      if (newTodo !== null) {
+        const newDate = prompt('Enter a new date');
+        const newStatus = prompt('Enter a new status');
 
         
-        todos.splice(index, 1);
+        todos[index].task = newTodo;
+        todos[index].date = newDate;
+        todos[index].status = newStatus;
 
         
         renderTodos();
@@ -182,6 +213,22 @@
     }
 
     
+    todoForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      addTodo();
+    });
+
+    
+    filterToggle.addEventListener('click', () => {
+      document.body.classList.toggle('show-filters');
+    });
+
+    
+    filterAllButton.addEventListener('click', filterTodos);
+    filterActiveButton.addEventListener('click', filterTodos);
+    filterCompletedButton.addEventListener('click', filterTodos);
+
+   
     function filterTodos(event) {
       const filterType = event.target.id;
 
@@ -194,54 +241,26 @@
       event.target.classList.add('active');
 
       
-      if (filterType === 'filter-all') {
-        renderTodos();
-      } else if (filterType === 'filter-active') {
-        const activeTodos = todos.filter(todo => todo.status === 'Active');
-        renderFilteredTodos(activeTodos);
-      } else if (filterType === 'filter-completed') {
-        const completedTodos = todos.filter(todo => todo.status === 'Completed');
-        renderFilteredTodos(completedTodos);
-      }
-    }
-
-    
-    function renderFilteredTodos(filteredTodos) {
-      
       todoList.innerHTML = '';
 
       
-      filteredTodos.forEach((todo, index) => {
-        
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <span>${todo.task}</span>
-          <span>Date: ${todo.date}</span>
-          <span>Status: ${todo.status}</span>
-          <button class="delete-button" data-index="${index}">Delete</button>
-        `;
+      todos.forEach((todo, index) => {
+        if (filterType === 'filter-all' || (filterType === 'filter-active' && todo.status === 'Active') || (filterType === 'filter-completed' && todo.status === 'Completed')) {
+          
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <span>${todo.task}</span>
+            <span>Date: ${todo.date}</span>
+            <span>Status: ${todo.status}</span>
+            <button class="delete-button" onclick="deleteTodo(${index})">Delete</button>
+            <button class="edit-button" onclick="editTodo(${index})">Edit</button>
+          `;
 
-        
-        todoList.appendChild(li);
+          
+          todoList.appendChild(li);
+        }
       });
     }
-
-    
-    todoForm.addEventListener('submit', addTodo);
-
-    
-    todoList.addEventListener('click', deleteTodo);
-
-    
-    filterToggle.addEventListener('click', () => {
-      document.body.classList.toggle('show-filters');
-    });
-
-    
-    filterAllButton.addEventListener('click', filterTodos);
-    filterActiveButton.addEventListener('click', filterTodos);
-    filterCompletedButton.addEventListener('click', filterTodos);
   </script>
 </body>
 </html>
-
